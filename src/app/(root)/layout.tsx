@@ -9,7 +9,7 @@ export default function Layout({children}: { children: React.ReactNode }) {
             <AppSidebar/>
             <div className={'flex flex-col w-full'}>
                 <Navbar/>
-                <main className={'mt-1 p-1'} >
+                <main className={'h-screen max-h-full py-1 overflow-hidden'} >
                     {children}
                 </main>
             </div>

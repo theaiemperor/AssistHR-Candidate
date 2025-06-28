@@ -19,11 +19,11 @@ export default function ({onSubmit}: { onSubmit: (content: string) => void }) {
 
 
     return <>
-
         <Card className={'w-full max-w-3xl max-h-60 p-2 flex flex-col  gap-0'}>
 
             <Textarea
                 ref={areaRef}
+                placeholder={"Enter your answers here"}
                 className={'w-full resize-none rounded-md flex-1 border-none outline-none focus:ring-0 focus-visible:ring-0 mb-1 p-2'}
                 style={{scrollbarWidth: 'thin', scrollbarColor: "gray transparent", background: "none"}}
             />

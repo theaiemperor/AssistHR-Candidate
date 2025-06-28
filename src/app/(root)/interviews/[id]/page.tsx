@@ -1,6 +1,7 @@
 "use client";
 import {useParams} from "next/navigation";
 import ChatBox from "@/app/(root)/interviews/components/ChatBox";
+import ChatItem from "@/app/(root)/interviews/components/ChatItem";
 
 export default function () {
 
@@ -11,9 +12,19 @@ export default function () {
 
 
     const {id} = useParams()
-    return <div className={'w-full flex justify-center h-screen relative'}>
-        Taking interview for {id}
-        <div className={'w-full absolute bottom-1 flex justify-center'}>
+
+
+    return <div className={'h-full flex flex-col gap-3'}>
+        <div className={'text-center'}>
+            Interview for {id}
+        </div>
+        <div className={'h-full overflow-auto'}
+             style={{scrollbarWidth: 'thin', scrollbarColor: "gray transparent", background: "none"}}
+        >
+
+            <ChatItem/>
+        </div>
+        <div className={'h-max mb-2 flex justify-center '}>
             <ChatBox onSubmit={handleSubmit}/>
         </div>
     </div>
