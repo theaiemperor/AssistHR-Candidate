@@ -8,11 +8,6 @@ export const sidebarMenu = [
         icon: Home,
     },
     {
-        title: "Interviews",
-        url: "/interviews",
-        icon: Bot,
-    },
-    {
         title: "My Interviews",
         url: "/my_interviews",
         icon: Folder,

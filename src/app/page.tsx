@@ -161,7 +161,7 @@ export default function Home() {
 
                         <div>
                             <Button className={'bg-indigo-200 hover:bg-indigo-300 rounded-full font-bold'} asChild>
-                                <Link href={'/interviews'}>
+                                <Link href={'/interview/react'}>
                                     Start an Interview
                                 </Link>
                             </Button>

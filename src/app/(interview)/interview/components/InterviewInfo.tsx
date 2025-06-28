@@ -1,6 +1,5 @@
 import {Card} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
-import Link from "next/link";
 
 
 interface InterviewInfo {
@@ -14,7 +13,7 @@ interface InterviewInfo {
 export default function ({info}: { info: InterviewInfo }) {
 
     return <>
-        <Card className={'p-2 max-w-md'}>
+        <Card className={'p-3 m-2 max-w-lg '}>
             <div>
                 <div className={'text-lg text-center font-bold'}>
                     {info.name}
@@ -34,12 +33,10 @@ export default function ({info}: { info: InterviewInfo }) {
 
             <div className={'flex justify-between'}>
                 <Button className={'cursor-pointer'} variant={'destructive'}>
-                    <Link href={'/home'}>
-                        Go to home
-                    </Link>
+                    Go to home
                 </Button>
                 <Button className={'cursor-pointer'}>
-                    Start Now
+                    Start Interview
                 </Button>
             </div>
         </Card>
