@@ -1,0 +1,40 @@
+import {Card} from "@/components/ui/card";
+import {Textarea} from "@/components/ui/textarea";
+import {ArrowUp} from "lucide-react";
+import {useRef} from "react";
+
+export default function ({onSubmit}: { onSubmit: (content: string) => void }) {
+
+    const areaRef = useRef<null | HTMLTextAreaElement>(null);
+
+    function handleSubmit() {
+        const data = areaRef.current?.value || "";
+
+        if (areaRef.current && data.length > 0) {
+            onSubmit(data);
+            areaRef.current.value = ""
+
+        }
+    }
+
+
+    return <>
+
+        <Card className={'w-full max-w-3xl max-h-60 p-2 flex flex-col  gap-0'}>
+
+            <Textarea
+                ref={areaRef}
+                className={'w-full resize-none rounded-md flex-1 border-none outline-none focus:ring-0 focus-visible:ring-0 mb-1 p-2'}
+                style={{scrollbarWidth: 'thin', scrollbarColor: "gray transparent", background: "none"}}
+            />
+            <div className={'flex justify-end h-max mt-2'}>
+                <button className={'rounded-full p-0.5 border cursor-pointer'} onClick={handleSubmit}>
+                    <ArrowUp/>
+                </button>
+            </div>
+
+        </Card>
+
+
+    </>
+}

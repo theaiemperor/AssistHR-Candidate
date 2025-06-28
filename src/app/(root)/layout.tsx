@@ -7,9 +7,9 @@ export default function Layout({children}: { children: React.ReactNode }) {
     return (
         <SidebarProvider>
             <AppSidebar/>
-            <div className={'flex flex-col p-1  w-full'}>
+            <div className={'flex flex-col w-full'}>
                 <Navbar/>
-                <main className={'mt-1'} >
+                <main className={'mt-1 p-1'} >
                     {children}
                 </main>
             </div>

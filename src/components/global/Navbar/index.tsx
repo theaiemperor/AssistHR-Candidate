@@ -14,8 +14,8 @@ export default function Navbar() {
     }
 
     return <>
-        <Card className={'p-1 py-2 rounded-sm w-full sticky top-0'}>
-            <div className={'flex gap-2 items-center'}>
+        <Card className={'p-1 py-2 border-l-0 border-r-0 rounded-none w-full sticky top-0 z-50' }>
+            <div className={'flex gap-2 items-center '}>
                 <SidebarTrigger  />
                 <span className={'font-bold '}>{constants.app.name}</span>
             </div>
