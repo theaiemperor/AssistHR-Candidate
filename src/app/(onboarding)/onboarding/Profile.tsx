@@ -11,7 +11,7 @@ import RadioInput from "@/components/shared/RadioInput";
 
 
 const formSchema = z.object({
-    username: z
+    userName: z
         .string({required_error: 'User name is required'})
         .min(2, 'Minimum 2 characters')
         .max(50, 'Maximum 50 characters'),
@@ -44,7 +44,7 @@ export default function ProfileForm() {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
+            userName: "",
             city: "",
             country: "",
             gender: "male" as const,
@@ -63,7 +63,7 @@ export default function ProfileForm() {
         <OnboardingContainer title={"Profile"} hideNext>
             <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <FormInput name={'username'} label={'Name'}/>
+                    <FormInput name={'userName'} label={'Name'}/>
                     <div className={'flex w-full gap-3 items-end'}>
                         <FormInput className={'w-16 font-bold'} name={'countryCode'} label={'Phone'}
                                    props={{defaultValue: "+91"}}/>

@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import {Mona_Sans} from "next/font/google";
 import "../static/globals.css";
+import {PropsWithChildren} from "react";
 
 const monaSans = Mona_Sans({
     variable: "--font-geist-sans",
@@ -9,22 +10,22 @@ const monaSans = Mona_Sans({
 
 
 export const metadata: Metadata = {
-    title: "AI Interviewer",
-    description: "An ai interview taking platform",
+    title: "AssistHR Candidate",
+    description: "A platform for taking & practicing for interviews",
     icons: {icon: "/logo.png"}
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function RootLayout({children}: Readonly<PropsWithChildren>) {
+
+
     return (
         <html lang="en" className={'dark'}>
         <body
             className={`${monaSans.className} antialiased`}
         >
-        {children}
+        {
+            children
+        }
         </body>
         </html>
     );
