@@ -3,28 +3,43 @@ import {create} from "zustand";
 export interface IInterviewInfo {
     id: string;
     name: string;
-    description: string;
-    screening?: string;
+    shortDescription: string;
+    screening: string;
     rounds: {
-        name: string
-        description: string
-        avgDuration: number
-    }[]
-    roundsNames: string[]
-    company: string
+        [key: number]: {
+            name: string,
+            shortDescription: string
+            avgDuration: number
+        }
+    }
+    businessName: string
     createdAt: Date;
 }
 
 export interface IInterviewStore {
     interviewInfo: IInterviewInfo | null;
-    setInfo: (product: IInterviewInfo | null) => void;
+    roundNames: Record<number, string>,
+    setInterviewInfo: (product: IInterviewInfo | null) => void;
 }
 
 export default create<IInterviewStore>((set) => ({
     interviewInfo: null,
+    roundNames: {},
 
-    setInfo: (info: IInterviewInfo | null) =>
+    setInterviewInfo: (info: IInterviewInfo | null) =>
         set((state) => {
-            return {...state, interviewInfo: info};
+
+            if (info) {
+
+                const rounds = Object.entries(info.rounds).reduce((acc, [key, value]) => {
+                    acc[Number(key)] = value.name;
+                    return acc;
+                }, {} as Record<number, string>);
+
+                return {...state, interviewInfo: info, roundNames: rounds};
+            }
+
+            return state;
+
         }),
 }));

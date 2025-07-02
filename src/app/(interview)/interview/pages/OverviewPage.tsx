@@ -1,22 +1,27 @@
 import useCurrentInterview from "@/app/(interview)/interview/useCurrentInterview";
-import {useState} from "react";
+import {useState, memo} from "react";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import ChatScreen from "@/app/(interview)/interview/components/ChatScreen";
 
-export default function () {
+function OverviewPage() {
 
 
     const {interviewInfo} = useCurrentInterview();
+
+
+    if (interviewInfo === null) {
+        return;
+    }
+
+
+    const rounds = Object.keys(interviewInfo.rounds);
     const [showInfo, setShowInfo] = useState(true)
 
     if (!interviewInfo) {
         return;
     }
-
-
-    const firstRound = interviewInfo.rounds[0].name || null;
 
 
     if (showInfo) {
@@ -30,15 +35,15 @@ export default function () {
                                 {interviewInfo.name}
                             </div>
                             <div className={'flex justify-center gap-2 text-xs text-gray-300 mt-1'}>
-                                <div>{interviewInfo.company}</div>
+                                <div>{interviewInfo.businessName}</div>
                                 |
-                                <div>{interviewInfo.createdAt.toDateString()}</div>
+                                <div>{new Date(interviewInfo.createdAt).toDateString()}</div>
                                 |
-                                <div>{interviewInfo.rounds.length} Rounds</div>
+                                <div>{rounds.length} Rounds</div>
                             </div>
                         </DialogTitle>
                         <DialogDescription className={'my-3'}>
-                            {interviewInfo.description}
+                            {interviewInfo.shortDescription}
                         </DialogDescription>
 
                         <div className={'flex justify-between'}>
@@ -55,11 +60,13 @@ export default function () {
                     </DialogHeader>
                 </DialogContent>
             </Dialog>
-
         </>
     } else {
         return <div className={'h-screen'}>
-            <ChatScreen next={firstRound}/>
+            <ChatScreen title={'Screening Round'} next={interviewInfo.rounds[1].name}/>
         </div>
     }
 }
+
+
+export default memo(OverviewPage);

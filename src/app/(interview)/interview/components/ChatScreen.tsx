@@ -1,5 +1,4 @@
 "use client";
-import {useSearchParams} from "next/navigation";
 import ChatBox from "@/app/(interview)/interview/components/ChatBox";
 import ChatItem, {ChatItemProps} from "@/app/(interview)/interview/components/ChatItem";
 import {useState} from "react";
@@ -9,13 +8,20 @@ import {Card} from "@/components/ui/card";
 import Link from "next/link";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 
-export default function ({next}: { next: null | string }) {
+
+interface Props {
+    next: null | string
+    title: string
+}
+
+
+export default function ({next, title}: Props) {
 
     const [chat, setChat] = useState<ChatItemProps[]>([])
-
-    const {seconds} = useTimer(20)
     const [isCompleted, setIsCompleted] = useState(false)
     const [modalMsg, setModalMsg] = useState('')
+
+    const {seconds} = useTimer(20)
 
 
     function showModal() {
@@ -38,9 +44,6 @@ export default function ({next}: { next: null | string }) {
         }
         setChat(prev => ([...prev, {id: Math.random().toString(), content, isUser: true}]));
     }
-
-
-    const round = useSearchParams().get("round");
 
 
     return <>
@@ -69,7 +72,7 @@ export default function ({next}: { next: null | string }) {
         </Dialog>
         <div className={'h-full flex flex-col gap-3'}>
             <div className={'text-center font-bold text-xl text-blue-400'}>
-                Round : {round || "Screening Round"}
+                {title}
             </div>
             <div className={'h-full overflow-auto'}
                  style={{scrollbarWidth: 'thin', scrollbarColor: "gray transparent", background: "none"}}

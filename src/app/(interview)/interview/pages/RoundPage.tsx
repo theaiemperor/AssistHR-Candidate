@@ -1,11 +1,12 @@
 "use client";
 import useCurrentInterview, {IInterviewInfo} from "@/app/(interview)/interview/useCurrentInterview";
-import {useSearchParams} from "next/navigation";
-import {useEffect, useState} from "react";
+import {useRouter, useSearchParams} from "next/navigation";
+import {useEffect, useMemo, useState} from "react";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import ChatScreen from "@/app/(interview)/interview/components/ChatScreen";
 import useTimer from "@/hooks/useTimer";
+import {removeQueryParam} from "@/lib/url";
 
 
 function formatDuration(seconds: number) {
@@ -22,15 +23,18 @@ function formatDuration(seconds: number) {
 export default function () {
 
 
-    const {interviewInfo} = useCurrentInterview();
-    const currentRound = useSearchParams().get('round') || "";
+    const {interviewInfo, roundNames} = useCurrentInterview();
+    const router = useRouter();
+
+    const searchParams = useSearchParams();
+    const currentRound = useMemo(() => searchParams.get("round") || "", [searchParams]);
+
     const {minutes, seconds} = useTimer(90, startRound)
 
 
     const [showInfo, setShowInfo] = useState(true)
-    const [isNext, setIsNext] = useState<null|string>(null)
+    const [isNext, setIsNext] = useState<null | string>(null)
     const [roundInfo, setRoundInfo] = useState<null | IInterviewInfo['rounds'][number]>(null);
-
 
 
     if (!interviewInfo) {
@@ -39,18 +43,30 @@ export default function () {
 
 
     useEffect(() => {
-        interviewInfo.rounds.forEach(round => {
-            if (round.name === currentRound) {
-                setRoundInfo(round);
-            }
-        })
-        const next = interviewInfo.rounds[interviewInfo.roundsNames.indexOf(currentRound)+1];
-        if(next){
-            setIsNext(next.name);
-        }else{
-            setIsNext(null)
+
+
+        if (!Object.values(roundNames).includes(currentRound)) {
+
+            router.replace(removeQueryParam(location.href, 'round'))
+
+
+        } else {
+            Object.entries(interviewInfo.rounds).forEach(([key, val]) => {
+                if (val.name === currentRound) {
+
+                    setRoundInfo(val);
+
+                    if (roundNames[Number(key) + 1]) {
+                        setIsNext(roundNames[Number(key) + 1]);
+                    } else {
+                        setIsNext(null);
+                    }
+                }
+
+            })
         }
-    }, [currentRound])
+
+    }, [currentRound, interviewInfo])
 
     useEffect(() => {
         setShowInfo(true)
@@ -81,7 +97,7 @@ export default function () {
                             </div>
                         </DialogTitle>
                         <DialogDescription className={'my-3'}>
-                            {roundInfo.description}
+                            {roundInfo.shortDescription}
                         </DialogDescription>
                         <div>
                             <div className={'flex justify-between'}>
@@ -100,9 +116,8 @@ export default function () {
         </>
     } else {
         return <div className={'border h-screen'}>
-            <ChatScreen next={isNext} />
+            <ChatScreen title={currentRound} next={isNext}/>
         </div>
     }
-
 
 }

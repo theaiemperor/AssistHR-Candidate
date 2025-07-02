@@ -1,45 +1,69 @@
 "use client";
-import {useSearchParams} from "next/navigation";
-import {useEffect} from "react";
-import {jobInfo} from "@/app/(interview)/interview/jobData";
+import {useParams, useSearchParams} from "next/navigation";
 import useCurrentInterview from "@/app/(interview)/interview/useCurrentInterview";
-import RoundPage from "@/app/(interview)/interview/pages/RoundPage";
+import {useQuery} from "@tanstack/react-query";
+import Loader from "@/components/global/Loader";
+import {AxiosError} from "axios";
+import InterviewErrorPage from "@/app/(interview)/interview/pages/InterviewErrorPage";
+import axiosClient from "@/lib/axiosClient";
 import OverviewPage from "@/app/(interview)/interview/pages/OverviewPage";
+import {useMemo} from "react";
+import RoundPage from "@/app/(interview)/interview/pages/RoundPage";
 
-export interface JobInfo {
-    id: string;
-    name: string;
-    description: string;
-    rounds: {
-        name: string
-        description: string
-        avgDuration: number
-    }[]
-    company: string
-    createdAt: Date;
-}
 
 export default function () {
-    
-    const round = useSearchParams().get("round") || ""
 
-    const {setInfo, interviewInfo} = useCurrentInterview()
-
-    useEffect(() => {
-        const roundsNames = jobInfo.rounds.map(round => round.name)
-        setInfo({...jobInfo, roundsNames})
-    }, [])
+    const searchParams = useSearchParams();
+    const currentRound = useMemo(() => searchParams.get("round") || "", [searchParams]);
+    const {id} = useParams();
 
 
-    if (interviewInfo === null) {
-        return;
+    const {setInterviewInfo} = useCurrentInterview()
+
+
+    const {isLoading, isError, error} = useQuery({
+        queryKey: ['interview_' + currentRound],
+        queryFn: loadInterviewInfo,
+        refetchInterval: 0
+    })
+
+
+    async function loadInterviewInfo() {
+        try {
+            const {data: {data}} = await axiosClient.get('/jobs/' + id);
+            setInterviewInfo(data);
+            return data;
+        } catch (error) {
+
+            if (error instanceof AxiosError && error.response) {
+                const e = new Error()
+                e.name = error.response.statusText
+                e.message = error.response.data.message
+                throw e;
+            }
+            throw new Error();
+        }
     }
 
-    if (round !== "") {
-        return <RoundPage/>
-    } else {
+
+    if (isLoading) {
+        return <Loader msg={'Loading interview info'}/>;
+    }
+
+    if (isError) {
+        return <InterviewErrorPage
+            title={error.name || "Some problem happened"}
+            message={error.message || "Sorry, we can't go further so you have go to home."}
+        />
+    }
+
+
+    if (currentRound.length < 1) {
         return <OverviewPage/>
     }
+
+
+    return <RoundPage/>
 
 
 }
