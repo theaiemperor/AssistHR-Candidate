@@ -5,10 +5,10 @@ import {useQuery} from "@tanstack/react-query";
 import Loader from "@/components/global/Loader";
 import {AxiosError} from "axios";
 import InterviewErrorPage from "@/app/(interview)/interview/pages/InterviewErrorPage";
-import axiosClient from "@/lib/axiosClient";
 import OverviewPage from "@/app/(interview)/interview/pages/OverviewPage";
 import {useMemo} from "react";
 import RoundPage from "@/app/(interview)/interview/pages/RoundPage";
+import apiClient from "@/lib/axiosClient";
 
 
 export default function () {
@@ -30,7 +30,7 @@ export default function () {
 
     async function loadInterviewInfo() {
         try {
-            const {data: {data}} = await axiosClient.get('/jobs/' + id);
+            const {data: {data}} = await apiClient.get('/jobs/' + id);
             setInterviewInfo(data);
             return data;
         } catch (error) {
@@ -59,7 +59,7 @@ export default function () {
 
 
     if (currentRound.length < 1) {
-        return <OverviewPage/>
+        return <OverviewPage id={id as string}/>
     }
 
 

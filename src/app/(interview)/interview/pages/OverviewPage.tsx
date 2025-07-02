@@ -3,12 +3,16 @@ import {useState, memo} from "react";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
-import ChatScreen from "@/app/(interview)/interview/components/ChatScreen";
+import ChatScreen, {ChatMessageItem} from "@/app/(interview)/interview/components/ChatScreen";
+import apiClient from "@/lib/axiosClient";
+import {ChatItemProps} from "@/app/(interview)/interview/components/ChatItem";
 
-function OverviewPage() {
+
+function OverviewPage({id}: { id: string }) {
 
 
-    const {interviewInfo} = useCurrentInterview();
+    const {interviewInfo, setToken} = useCurrentInterview();
+    const [initialMsg, setInitialMsg] = useState<ChatItemProps>();
 
 
     if (interviewInfo === null) {
@@ -21,6 +25,27 @@ function OverviewPage() {
 
     if (!interviewInfo) {
         return;
+    }
+
+
+    async function startScreening() {
+
+        interface ServerResponse {
+            meta: string,
+            data: ChatMessageItem
+        }
+
+        try {
+            const response = await apiClient.get('/interview/' + id);
+            const {data, meta} = response.data as ServerResponse;
+
+            setToken(meta);
+            setInitialMsg({id: Math.random().toString(), content: data.content, isUser: false})
+            setShowInfo(false);
+
+        } catch (error) {
+
+        }
     }
 
 
@@ -52,7 +77,7 @@ function OverviewPage() {
                                     Go to home
                                 </Link>
                             </Button>
-                            <Button className={'cursor-pointer'} onClick={() => setShowInfo(false)}>
+                            <Button className={'cursor-pointer'} onClick={startScreening}>
                                 Start Interview
                             </Button>
                         </div>
@@ -63,7 +88,11 @@ function OverviewPage() {
         </>
     } else {
         return <div className={'h-screen'}>
-            <ChatScreen title={'Screening Round'} next={interviewInfo.rounds[1].name}/>
+            <ChatScreen
+                title={'Screening Round'}
+                next={interviewInfo.rounds[1].name}
+                initialMsg={initialMsg}
+            />
         </div>
     }
 }

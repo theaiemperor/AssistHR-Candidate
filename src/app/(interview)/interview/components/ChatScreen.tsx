@@ -12,12 +12,21 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} fro
 interface Props {
     next: null | string
     title: string
+    initialMsg?: ChatItemProps
+}
+
+export interface ChatMessageItem {
+    content: string
+    isFinished?: boolean
+    interviewFinished?: boolean
 }
 
 
-export default function ({next, title}: Props) {
+export default function ({next, title, initialMsg}: Props) {
 
-    const [chat, setChat] = useState<ChatItemProps[]>([])
+    const [chat, setChat] = useState<ChatItemProps[]>(initialMsg ? [initialMsg] : [])
+
+
     const [isCompleted, setIsCompleted] = useState(false)
     const [modalMsg, setModalMsg] = useState('')
 

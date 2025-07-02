@@ -19,12 +19,16 @@ export interface IInterviewInfo {
 export interface IInterviewStore {
     interviewInfo: IInterviewInfo | null;
     roundNames: Record<number, string>,
+    token: string | null,
+    setToken: (token: string) => void,
     setInterviewInfo: (product: IInterviewInfo | null) => void;
 }
 
 export default create<IInterviewStore>((set) => ({
     interviewInfo: null,
     roundNames: {},
+    token: null,
+    setToken: (token: string | null) => set(state => ({...state, token})),
 
     setInterviewInfo: (info: IInterviewInfo | null) =>
         set((state) => {
