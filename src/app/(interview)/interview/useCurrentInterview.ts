@@ -1,8 +1,9 @@
 import {create} from "zustand";
+import {jwtDecode} from "jwt-decode";
 
 export interface IInterviewInfo {
     id: string;
-    name: string;
+    title: string;
     shortDescription: string;
     screening: string;
     rounds: {
@@ -16,10 +17,24 @@ export interface IInterviewInfo {
     createdAt: Date;
 }
 
+
+interface Token {
+    interviewId: string
+    jobId: string
+    assistantId: string
+    threadId: string
+    roundKey: number
+    nextRound: string | null
+    info: 'screening' | 'pending' | 'completed' | 'screening_completed'
+}
+
 export interface IInterviewStore {
     interviewInfo: IInterviewInfo | null;
     roundNames: Record<number, string>,
-    token: string | null,
+    auth: {
+        token: string,
+        value: Token
+    } | null,
     setToken: (token: string) => void,
     setInterviewInfo: (product: IInterviewInfo | null) => void;
 }
@@ -27,8 +42,16 @@ export interface IInterviewStore {
 export default create<IInterviewStore>((set) => ({
     interviewInfo: null,
     roundNames: {},
-    token: null,
-    setToken: (token: string | null) => set(state => ({...state, token})),
+    auth: null,
+    setToken: (token: string | null) => {
+
+        if (token === null) {
+            return set(state => ({...state, auth: null}))
+        }
+
+        const value = (jwtDecode(token) as any).data as Token;
+        return set(state => ({...state, auth: {token, value}}))
+    },
 
     setInterviewInfo: (info: IInterviewInfo | null) =>
         set((state) => {

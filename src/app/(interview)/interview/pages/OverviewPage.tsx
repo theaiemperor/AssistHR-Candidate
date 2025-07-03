@@ -1,11 +1,13 @@
 import useCurrentInterview from "@/app/(interview)/interview/useCurrentInterview";
-import {useState, memo} from "react";
+import {memo, useState} from "react";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import ChatScreen, {ChatMessageItem} from "@/app/(interview)/interview/components/ChatScreen";
 import apiClient from "@/lib/axiosClient";
 import {ChatItemProps} from "@/app/(interview)/interview/components/ChatItem";
+import {Loader} from "lucide-react";
+import {useMutation} from "@tanstack/react-query";
 
 
 function OverviewPage({id}: { id: string }) {
@@ -13,6 +15,7 @@ function OverviewPage({id}: { id: string }) {
 
     const {interviewInfo, setToken} = useCurrentInterview();
     const [initialMsg, setInitialMsg] = useState<ChatItemProps>();
+    const {isPending, mutate} = useMutation({mutationFn: startScreening})
 
 
     if (interviewInfo === null) {
@@ -57,7 +60,7 @@ function OverviewPage({id}: { id: string }) {
                     <DialogHeader>
                         <DialogTitle className={'text-center'}>
                             <div className={'text-lg text-center font-bold'}>
-                                {interviewInfo.name}
+                                {interviewInfo.title}
                             </div>
                             <div className={'flex justify-center gap-2 text-xs text-gray-300 mt-1'}>
                                 <div>{interviewInfo.businessName}</div>
@@ -73,12 +76,14 @@ function OverviewPage({id}: { id: string }) {
 
                         <div className={'flex justify-between'}>
                             <Button className={'cursor-pointer'} variant={'destructive'} asChild>
-                                <Link href={'/home'}>
+                                <Link href={isPending ? '#' : '/home'}>
                                     Go to home
                                 </Link>
                             </Button>
-                            <Button className={'cursor-pointer'} onClick={startScreening}>
-                                Start Interview
+
+                            <Button className={'cursor-pointer'} onClick={() => mutate()} disabled={isPending}>
+                                {isPending ? <Loader className="animate-spin"/> : ""}
+                                {isPending ? "Please wait..." : "Start Interview"}
                             </Button>
                         </div>
 
@@ -89,8 +94,7 @@ function OverviewPage({id}: { id: string }) {
     } else {
         return <div className={'h-screen'}>
             <ChatScreen
-                title={'Screening Round'}
-                next={interviewInfo.rounds[1].name}
+                title={'screening'}
                 initialMsg={initialMsg}
             />
         </div>

@@ -4,9 +4,13 @@ import {useRouter, useSearchParams} from "next/navigation";
 import {useEffect, useMemo, useState} from "react";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import ChatScreen from "@/app/(interview)/interview/components/ChatScreen";
+import ChatScreen, {ChatMessageItem} from "@/app/(interview)/interview/components/ChatScreen";
 import useTimer from "@/hooks/useTimer";
 import {removeQueryParam} from "@/lib/url";
+import {Loader} from "lucide-react";
+import apiClient from "@/lib/axiosClient";
+import {useMutation} from "@tanstack/react-query";
+import {ChatItemProps} from "@/app/(interview)/interview/components/ChatItem";
 
 
 function formatDuration(seconds: number) {
@@ -23,18 +27,19 @@ function formatDuration(seconds: number) {
 export default function () {
 
 
-    const {interviewInfo, roundNames} = useCurrentInterview();
+    const {interviewInfo, roundNames, setToken, auth} = useCurrentInterview();
     const router = useRouter();
 
     const searchParams = useSearchParams();
     const currentRound = useMemo(() => searchParams.get("round") || "", [searchParams]);
 
-    const {minutes, seconds} = useTimer(90, startRound)
+    const {minutes, seconds} = useTimer(90, {onComplete: startRound})
 
 
     const [showInfo, setShowInfo] = useState(true)
-    const [isNext, setIsNext] = useState<null | string>(null)
     const [roundInfo, setRoundInfo] = useState<null | IInterviewInfo['rounds'][number]>(null);
+    const {mutate, isPending} = useMutation({mutationFn: startRound})
+    const [initialMsg, setInitialMsg] = useState<ChatItemProps>();
 
 
     if (!interviewInfo) {
@@ -51,16 +56,10 @@ export default function () {
 
 
         } else {
-            Object.entries(interviewInfo.rounds).forEach(([key, val]) => {
+            Object.values(interviewInfo.rounds).forEach((val) => {
                 if (val.name === currentRound) {
-
                     setRoundInfo(val);
 
-                    if (roundNames[Number(key) + 1]) {
-                        setIsNext(roundNames[Number(key) + 1]);
-                    } else {
-                        setIsNext(null);
-                    }
                 }
 
             })
@@ -78,8 +77,26 @@ export default function () {
     }
 
 
-    function startRound() {
-        setShowInfo(() => false)
+    async function startRound() {
+
+        interface ServerResponse {
+            meta: string,
+            data: ChatMessageItem
+        }
+
+        try {
+            const response = await apiClient.post('/interview/', {
+                token: auth?.token || ""
+            });
+            const {data, meta} = response.data as ServerResponse;
+
+            setToken(meta);
+            setInitialMsg({id: Math.random().toString(), content: data.content, isUser: false})
+            setShowInfo(false);
+
+        } catch (error) {
+
+        }
     }
 
 
@@ -104,8 +121,9 @@ export default function () {
                                 <Button className={'pointer-events-none rounded-full'} variant={'outline'}>
                                     {minutes}m {seconds < 10 ? "0" + seconds : seconds}s left
                                 </Button>
-                                <Button className={'cursor-pointer'} onClick={startRound}>
-                                    Start Now
+                                <Button className={'cursor-pointer'} onClick={() => mutate()} disabled={isPending}>
+                                    {isPending ? <Loader className="animate-spin"/> : ""}
+                                    {isPending ? "Please wait..." : "Start Round"}
                                 </Button>
                             </div>
                         </div>
@@ -116,7 +134,7 @@ export default function () {
         </>
     } else {
         return <div className={'border h-screen'}>
-            <ChatScreen title={currentRound} next={isNext}/>
+            <ChatScreen title={currentRound} initialMsg={initialMsg}/>
         </div>
     }
 
