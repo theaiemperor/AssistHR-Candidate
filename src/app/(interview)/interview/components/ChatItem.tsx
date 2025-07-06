@@ -40,7 +40,7 @@ function ChatItem({chatData, isPending, ref}: Props) {
 
                 })
             }
-            <div ref={ref} />
+            <div ref={ref}/>
             <div hidden={!isPending}>
                 <Sparkles className={'animate-pulse '}/>
             </div>

@@ -13,7 +13,7 @@ export default function () {
     },
         {
             id: '2',
-            content: "Ok But before starting your interview, I want to ask you whether you have any question about us or not. if any then feel free to ask.",
+            content: "Ok But before starting your interviews, I want to ask you whether you have any question about us or not. if any then feel free to ask.",
             isUser: false
         }])
 

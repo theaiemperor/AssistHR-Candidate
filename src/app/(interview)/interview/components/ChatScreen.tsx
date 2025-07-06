@@ -46,36 +46,17 @@ export default function ({title, initialMsg}: Props) {
 
     async function submitAnswer(content: string) {
         try {
-            // const response = await apiClient.put('/interview/', {
-            //     content,
-            //     token: auth?.token || "",
-            // })
-            // const {data} = (response.data)
-
-            await sleep(5000);
-            const failed = content.includes('failed') ? 'failed' : false;
-            const completed = content.includes('completed') ? 'completed' : 'pending';
-
-
-            const data = {
-                status: failed || completed,
-                content: content,
-                finished: false
-            }
+            const {data: {data}} = await apiClient.put('/interview/live', {
+                content,
+                token: auth?.token || "",
+            })
 
 
             setChat(prev => ([
                 ...prev, {id: Math.random().toString(), content: data.content, isUser: false}
             ]))
 
-            if (data.finished) {
-                setStatus('finished')
-            } else if (data.status === 'pending') {
-                setStatus(data.status);
-            } else {
-                setStatus('completed');
-                // setToken(response.data.meta)
-            }
+            setStatus(data.finished ? 'finished' : data.status);
 
 
         } catch (error) {

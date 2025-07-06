@@ -3,12 +3,12 @@ import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import {TriangleAlert} from "lucide-react";
 
-interface InterviewErrorPage {
+interface InterviewError {
     title?: string;
     message?: string;
 }
 
-export default function ({title, message}: InterviewErrorPage) {
+export default function ({title, message}: InterviewError) {
     return <>
         <Dialog open={true}>
             <DialogContent showCloseButton={false}>

@@ -11,6 +11,7 @@ import {Loader} from "lucide-react";
 import apiClient from "@/lib/axiosClient";
 import {useMutation} from "@tanstack/react-query";
 import {ChatItemProps} from "@/app/(interview)/interview/components/ChatItem";
+import {AxiosError} from "axios";
 
 
 function formatDuration(seconds: number) {
@@ -80,22 +81,26 @@ export default function () {
     async function startRound() {
 
         interface ServerResponse {
-            meta: string,
+            meta: { token: string },
             data: ChatMessageItem
         }
 
         try {
-            const response = await apiClient.post('/interview/', {
+            const response = await apiClient.post('/interview/live/', {
                 token: auth?.token || ""
             });
             const {data, meta} = response.data as ServerResponse;
 
-            setToken(meta);
+            setToken(meta.token);
             setInitialMsg({id: Math.random().toString(), content: data.content, isUser: false})
             setShowInfo(false);
 
         } catch (error) {
-
+            if (error instanceof AxiosError) {
+                if (error.status === 403) {
+                    router.push('?')
+                }
+            }
         }
     }
 
@@ -110,11 +115,11 @@ export default function () {
                                 {roundInfo.name}
                             </div>
                             <div className={'flex justify-center gap-2 text-xs text-gray-300 mt-1'}>
-                                <div>Avg time duration : <b>{formatDuration(roundInfo.avgDuration)}</b></div>
+                                <div>Avg time duration : <b>{formatDuration(roundInfo.avgDuration || 200)}</b></div>
                             </div>
                         </DialogTitle>
                         <DialogDescription className={'my-3'}>
-                            {roundInfo.shortDescription}
+                            {roundInfo.shortDescription || ""}
                         </DialogDescription>
                         <div>
                             <div className={'flex justify-between'}>

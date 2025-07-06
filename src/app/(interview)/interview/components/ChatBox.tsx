@@ -8,7 +8,7 @@ interface Props extends HTMLProps<HTMLTextAreaElement> {
     handleSubmit: (content: string) => void;
 }
 
-export default function ({handleSubmit, ...props}: Props) {
+export default function ({handleSubmit}: Props) {
 
     const areaRef = useRef<null | HTMLTextAreaElement>(null);
 

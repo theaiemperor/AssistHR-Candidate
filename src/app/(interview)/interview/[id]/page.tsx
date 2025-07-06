@@ -4,7 +4,7 @@ import useCurrentInterview from "@/app/(interview)/interview/useCurrentInterview
 import {useQuery} from "@tanstack/react-query";
 import Loader from "@/components/global/Loader";
 import {AxiosError} from "axios";
-import InterviewErrorPage from "@/app/(interview)/interview/pages/InterviewErrorPage";
+import InterviewErrorPage from "@/app/(interview)/live/components/InterviewError";
 import OverviewPage from "@/app/(interview)/interview/pages/OverviewPage";
 import {useMemo} from "react";
 import RoundPage from "@/app/(interview)/interview/pages/RoundPage";
@@ -30,7 +30,7 @@ export default function () {
 
     async function loadInterviewInfo() {
         try {
-            const {data: {data}} = await apiClient.get('/jobs/' + id);
+            const {data: {data}} = await apiClient('/jobs/' + id);
             setInterviewInfo(data);
             return data;
         } catch (error) {
@@ -47,7 +47,7 @@ export default function () {
 
 
     if (isLoading) {
-        return <Loader msg={'Loading interview info'}/>;
+        return <Loader msg={'Loading interviews info'}/>;
     }
 
     if (isError) {

@@ -34,15 +34,15 @@ function OverviewPage({id}: { id: string }) {
     async function startScreening() {
 
         interface ServerResponse {
-            meta: string,
+            meta: { token: string },
             data: ChatMessageItem
         }
 
         try {
-            const response = await apiClient.get('/interview/' + id);
-            const {data, meta} = response.data as ServerResponse;
+            const response = await apiClient.get('/interview/live/' + id);
+            const {data, meta: {token}} = response.data as ServerResponse;
 
-            setToken(meta);
+            setToken(token);
             setInitialMsg({id: Math.random().toString(), content: data.content, isUser: false})
             setShowInfo(false);
 
@@ -63,7 +63,7 @@ function OverviewPage({id}: { id: string }) {
                                 {interviewInfo.title}
                             </div>
                             <div className={'flex justify-center gap-2 text-xs text-gray-300 mt-1'}>
-                                <div>{interviewInfo.businessName}</div>
+                                <div>{interviewInfo.businessName || "Business"}</div>
                                 |
                                 <div>{new Date(interviewInfo.createdAt).toDateString()}</div>
                                 |
