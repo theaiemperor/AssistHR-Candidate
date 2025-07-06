@@ -1,38 +1,35 @@
+"use client";
 import {Card} from "@/components/ui/card";
 import {motion} from "motion/react";
 import {Sparkles} from "lucide-react";
-import {memo, Ref} from 'react';
+import {memo, useEffect, useRef} from 'react';
+import useChatHistory from "@/app/(interview)/live/utils/useChatHistory";
 
-export interface ChatItemProps {
-    id: string;
-    content?: string;
-    isUser?: boolean;
-    isPending?: boolean;
-}
 
-interface Props {
-    chatData: ChatItemProps[]
-    isPending?: boolean
-    ref?: Ref<HTMLDivElement>
-}
+function ChatItem() {
 
-function ChatItem({chatData, isPending, ref}: Props) {
+    const {history, isPending} = useChatHistory(state => state)
+    const ref = useRef<HTMLDivElement>(null);
 
+
+    useEffect(() => {
+        ref.current?.focus()
+    }, [history])
 
     return <div className={'flex  justify-center px-1'}>
         <div className={'flex flex-col gap-1 w-full max-w-3xl '}>
             {
-                chatData.map((chat) => {
+                history.map((chat, index) => {
                     return <motion.div
-                        key={chat.id}
+                        key={index}
                         layout
                         className={`max-w-3xl text-sm w-full ${chat.isUser ? 'self-end w-max' : 'mb-5'}`}
                         initial={{opacity: 0, y: 50}}
                         animate={{opacity: 1, y: 0}}
                         transition={{duration: 0.3, ease: 'easeOut'}}
                     >
-                        <Card key={chat.id}
-                              className={`p-2 whitespace-pre-wrap min-w-xs ${chat.isUser ? ' bg-gray-700 max-w-lg ' : ''}`}>
+                        <Card
+                            className={`p-2 whitespace-pre-wrap min-w-xs ${chat.isUser ? ' bg-gray-700 max-w-lg ' : ''}`}>
                             {chat.content}
                         </Card>
 

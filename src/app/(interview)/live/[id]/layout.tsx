@@ -6,11 +6,11 @@ import {useQuery} from "@tanstack/react-query";
 import InterviewError from "@/app/(interview)/live/components/InterviewError";
 import {AxiosError} from "axios";
 import Loader from "@/components/global/Loader";
-import useCurrentInterview from "@/app/(interview)/interview/useCurrentInterview";
+import useCurrentInterview from "@/app/(interview)/live/utils/useCurrentInterview";
 
 export default function ({children}: PropsWithChildren) {
     const {id} = useParams();
-    const setInterview = useCurrentInterview(state => state.setInterviewInfo)
+    const setJobInfo = useCurrentInterview(state => state.setJobInfo)
 
     const {isLoading, isError, error} = useQuery({
         queryKey: ['job', id],
@@ -19,7 +19,7 @@ export default function ({children}: PropsWithChildren) {
 
     async function loadJobInfo() {
         const {data: {data}} = await apiClient('/jobs/' + id);
-        setInterview(data);
+        setJobInfo(data);
         return data;
     }
 

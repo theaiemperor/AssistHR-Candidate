@@ -1,22 +1,31 @@
+"use client";
 import {Card} from "@/components/ui/card";
 import {Textarea} from "@/components/ui/textarea";
 import {ArrowUp} from "lucide-react";
-import {HTMLProps, KeyboardEvent, useRef} from "react";
+import {KeyboardEvent, useRef} from "react";
+import useCurrentInterview from "@/app/(interview)/live/utils/useCurrentInterview";
+import useChatHistory from "@/app/(interview)/live/utils/useChatHistory";
 
 
-interface Props extends HTMLProps<HTMLTextAreaElement> {
+interface Props {
     handleSubmit: (content: string) => void;
 }
 
-export default function ({handleSubmit}: Props) {
+export default function (props: Props) {
 
     const areaRef = useRef<null | HTMLTextAreaElement>(null);
+    const auth = useCurrentInterview(state => state.auth);
+    const {setHistory, setPending} = useChatHistory();
 
     function onSubmit() {
         const data = areaRef.current?.value || "";
 
         if (areaRef.current && data.length > 0) {
-            handleSubmit(data);
+
+            setHistory({content: data, isUser: true});
+            setPending(true);
+
+            props.handleSubmit(data);
             areaRef.current.value = ""
             areaRef.current.focus();
         }
@@ -44,6 +53,7 @@ export default function ({handleSubmit}: Props) {
     return <>
         <Card className={'w-full max-w-3xl max-h-60 p-2 flex flex-col  gap-0'}>
             <Textarea
+                disabled={!(auth?.info === "round_pending" || auth?.info === 'screening_pending')}
                 ref={areaRef}
                 placeholder={"Enter your answers here"}
                 onKeyDown={handleKeyDown}
